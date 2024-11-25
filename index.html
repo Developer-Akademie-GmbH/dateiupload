@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,16 +21,17 @@
             height: 100px;
             width: 100px;
             object-fit: cover;
-            background-color: rgba(0,0,0,0.1);
+            background-color: rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
-<body>
+
+<body onload="load()">
 
     <h1>Meine Bildergallerie</h1>
     <img src="img/upload.png" class="upload" onclick="filepicker.click()">
     <input type="file" id="filepicker" style="display: none;">
-    
+
     <div id="gallery">
 
     </div>
@@ -37,21 +39,59 @@
     <script>
         const filepicker = document.getElementById('filepicker');
         const gallery = document.getElementById('gallery');
+        let allImages = [];
 
-        filepicker.addEventListener('change', () => {
+        filepicker.addEventListener('change', async () => {
             const files = filepicker.files;
-            if(files.length > 0) {
+            if (files.length > 0) {
                 Array.from(files).forEach(async file => {
-                    const blob = new Blob([file], { type: file.type});
+                    const blob = new Blob([file], { type: file.type });
                     console.log('Neue Datei', blob);
 
+                    const base64 = await blobToBase64(blob);
                     const img = document.createElement('img');
-                    img.src = URL.createObjectURL(blob);
+                    img.src = base64;
                     gallery.appendChild(img);
+                    allImages.push({
+                        filename: file.name,
+                        fileType: blob.type,
+                        base64: base64
+                    });
+                    save();
                 });
             }
-
         });
+
+        function save() {
+            let arrayAsString = JSON.stringify(allImages);
+            localStorage.setItem('allImages', arrayAsString);
+        }
+
+        function load() {
+            let arrayAsString = localStorage.getItem('allImages');
+            if (arrayAsString) {
+                allImages = JSON.parse(arrayAsString);
+                render();
+            }
+        }
+
+        function render() {
+            gallery.innerHTML = '';
+            allImages.forEach(image => {
+                gallery.innerHTML += `
+                    <img src="${image.base64}">
+                    `;
+            });
+        }
+
+        function blobToBase64(blob) {
+            return new Promise((resolve, _) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(blob);
+            });
+        }
     </script>
 </body>
+
 </html>
