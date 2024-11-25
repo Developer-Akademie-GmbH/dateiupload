@@ -23,6 +23,11 @@
             object-fit: cover;
             background-color: rgba(0, 0, 0, 0.1);
         }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
     </style>
 </head>
 
@@ -30,21 +35,29 @@
 
     <h1>Meine Bildergallerie</h1>
     <img src="img/upload.png" class="upload" onclick="filepicker.click()">
-    <input type="file" id="filepicker" style="display: none;">
+    <input type="file" id="filepicker" style="display: none;" accept="image/*">
+    <div id="error" class="error"></div>
 
     <div id="gallery">
 
     </div>
 
+    
+
     <script>
         const filepicker = document.getElementById('filepicker');
         const gallery = document.getElementById('gallery');
+        const error = document.getElementById('error');
         let allImages = [];
 
         filepicker.addEventListener('change', async () => {
             const files = filepicker.files;
             if (files.length > 0) {
                 Array.from(files).forEach(async file => {
+                    if (!file.type.startsWith('image/')) {
+                        error.textContent = `Die Datei "${file.name}" ist kein gültiges Bild.`;
+                        return;
+                    }
                     const blob = new Blob([file], { type: file.type });
                     console.log('Neue Datei', blob);
 
