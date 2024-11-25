@@ -9,6 +9,19 @@
             cursor: pointer;
             width: 100px;
         }
+
+        #gallery {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        #gallery img {
+            height: 100px;
+            width: 100px;
+            object-fit: cover;
+            background-color: rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -17,16 +30,24 @@
     <img src="img/upload.png" class="upload" onclick="filepicker.click()">
     <input type="file" id="filepicker" style="display: none;">
     
+    <div id="gallery">
+
+    </div>
+
     <script>
         const filepicker = document.getElementById('filepicker');
+        const gallery = document.getElementById('gallery');
+
         filepicker.addEventListener('change', () => {
             const files = filepicker.files;
             if(files.length > 0) {
                 Array.from(files).forEach(async file => {
                     const blob = new Blob([file], { type: file.type});
                     console.log('Neue Datei', blob);
-                    const text = await blob.text();
-                    console.log('Blob:', text);
+
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(blob);
+                    gallery.appendChild(img);
                 });
             }
 
