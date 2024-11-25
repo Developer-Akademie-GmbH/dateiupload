@@ -18,7 +18,19 @@
     <input type="file" id="filepicker" style="display: none;">
     
     <script>
-        
+        const filepicker = document.getElementById('filepicker');
+        filepicker.addEventListener('change', () => {
+            const files = filepicker.files;
+            if(files.length > 0) {
+                Array.from(files).forEach(async file => {
+                    const blob = new Blob([file], { type: file.type});
+                    console.log('Neue Datei', blob);
+                    const text = await blob.text();
+                    console.log('Blob:', text);
+                });
+            }
+
+        });
     </script>
 </body>
 </html>
