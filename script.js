@@ -19,10 +19,13 @@ filepicker.addEventListener('change', async () => {
             const img = document.createElement('img');
             img.src = compressedBase64;
             gallery.appendChild(img);
+            const viewer = new Viewer(img);
+
             allImages.push({
                 filename: file.name,
                 fileType: blob.type,
-                base64: compressedBase64
+                base64: compressedBase64,
+                viewer: viewer
             });
             save();
         });
